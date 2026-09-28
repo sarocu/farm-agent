@@ -1,0 +1,395 @@
+/* @farm/admin — application styles.
+ *
+ * Layout chrome for the admin shell (sidebar + main), plus a handful of
+ * form and utility classes shared across pages. Component-level styling
+ * comes from @farm/ui (imported in main.tsx).
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--farm-font-sans);
+  color: var(--farm-color-fg);
+  background-color: #f9fafb;
+}
+
+/* Layout ----------------------------------------------------------------- */
+.admin-app {
+  display: grid;
+  grid-template-columns: 16rem 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-right: 1px solid var(--farm-color-border);
+  padding: 1rem 0.75rem;
+  gap: 1rem;
+}
+
+.admin-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+.admin-sidebar__logo {
+  font-size: 1.5rem;
+}
+.admin-sidebar__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--farm-color-fg);
+}
+
+.admin-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--farm-radius-md);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--farm-color-fg);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.admin-nav-item:hover {
+  background-color: #f3f4f6;
+}
+.admin-nav-item--active {
+  background-color: var(--farm-color-primary-soft);
+  color: var(--farm-color-primary);
+  font-weight: 600;
+}
+.admin-nav-item__icon {
+  font-size: 1rem;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.admin-health {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+  color: var(--farm-color-muted);
+  border-top: 1px solid var(--farm-color-border);
+  margin-top: auto;
+}
+.admin-health__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background-color: var(--farm-color-muted);
+}
+.admin-health__dot--ok {
+  background-color: var(--farm-color-primary);
+}
+.admin-health__dot--down {
+  background-color: var(--farm-color-danger);
+}
+.admin-health__dot--checking {
+  background-color: var(--farm-color-warn);
+}
+
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--farm-color-border);
+}
+.admin-topbar__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.admin-content {
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+/* Page utilities --------------------------------------------------------- */
+.admin-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.admin-page-head__filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-grid {
+  display: grid;
+  gap: 1rem;
+}
+.admin-grid--stats {
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+}
+.admin-grid--2 {
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+}
+
+.admin-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  color: var(--farm-color-muted);
+}
+
+.admin-error {
+  background-color: var(--farm-color-danger-soft);
+  color: var(--farm-color-danger);
+  border: 1px solid #fecaca;
+  border-radius: var(--farm-radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* Forms ------------------------------------------------------------------ */
+.admin-form {
+  display: grid;
+  gap: 0.85rem;
+}
+.admin-form__row {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.admin-field__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--farm-color-muted);
+}
+.admin-field__input,
+.admin-field__select,
+.admin-field__textarea {
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--farm-color-fg);
+  border: 1px solid var(--farm-color-border);
+  border-radius: var(--farm-radius-md);
+  padding: 0.45rem 0.6rem;
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.admin-field__input:focus,
+.admin-field__select:focus,
+.admin-field__textarea:focus {
+  border-color: var(--farm-color-primary);
+}
+.admin-field__textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+.admin-field__hint {
+  font-size: 0.7rem;
+  color: var(--farm-color-muted);
+}
+.admin-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Aerial gallery --------------------------------------------------------- */
+.admin-aerial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.admin-aerial-card {
+  border: 1px solid var(--farm-color-border);
+  border-radius: var(--farm-radius-lg);
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.admin-aerial-card__img {
+  width: 100%;
+  height: 10rem;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+.admin-aerial-card__body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.admin-aerial-card__title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.admin-aerial-card__meta {
+  font-size: 0.75rem;
+  color: var(--farm-color-muted);
+}
+.admin-aerial-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 0.75rem 0.75rem;
+}
+
+/* Aerial editor ---------------------------------------------------------- */
+.admin-editor {
+  display: grid;
+  grid-template-columns: 1fr 16rem;
+  gap: 1rem;
+  align-items: start;
+}
+.admin-editor__canvas-wrap {
+  position: relative;
+  border: 1px solid var(--farm-color-border);
+  border-radius: var(--farm-radius-lg);
+  overflow: hidden;
+  background: repeating-conic-gradient(#f3f4f6 0% 25%, #fff 0% 50%) 50% / 1.5rem
+    1.5rem;
+}
+.admin-editor__canvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+}
+.admin-editor__side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.admin-editor__vertex-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 18rem;
+  overflow: auto;
+  border: 1px solid var(--farm-color-border);
+  border-radius: var(--farm-radius-md);
+}
+.admin-editor__vertex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--farm-color-border);
+}
+.admin-editor__vertex:last-child {
+  border-bottom: none;
+}
+.admin-editor__vertex-remove {
+  background: none;
+  border: none;
+  color: var(--farm-color-danger);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* Upload ----------------------------------------------------------------- */
+.admin-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1.5rem;
+  border: 2px dashed var(--farm-color-border);
+  border-radius: var(--farm-radius-lg);
+  color: var(--farm-color-muted);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.admin-dropzone--active {
+  border-color: var(--farm-color-primary);
+  background-color: var(--farm-color-primary-soft);
+}
+.admin-dropzone__icon {
+  font-size: 2.5rem;
+}
+
+.admin-preview-img {
+  max-width: 100%;
+  max-height: 16rem;
+  border-radius: var(--farm-radius-md);
+  border: 1px solid var(--farm-color-border);
+}
+
+/* Responsive ------------------------------------------------------------- */
+@media (max-width: 48rem) {
+  .admin-app {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--farm-color-border);
+  }
+  .admin-sidebar__nav {
+    flex-direction: row;
+  }
+  .admin-health {
+    display: none;
+  }
+  .admin-editor {
+    grid-template-columns: 1fr;
+  }
+}

@@ -8,7 +8,10 @@ and harvest calendars for a Community Supported Agriculture farm.
 
 ```
 Farm/
-├── apps/          # Deployable applications (added in later phases)
+├── apps/
+│   ├── backend/   # @farm/backend — Express REST API + MCP server (SQLite + Meilisearch)
+│   ├── admin/     # @farm/admin   — staff admin React app (Vite)
+│   └── customer/  # @farm/customer — customer-facing CSA site (Vite)
 └── packages/
     ├── types/     # @farm/types — shared domain TypeScript types
     └── ui/        # @farm/ui   — shared React component library

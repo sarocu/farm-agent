@@ -30,6 +30,10 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
+# Runtime data (SQLite DB, uploaded files)
+data/
+
+
 # Test / coverage
 coverage/
 .nyc_output/
