@@ -1,0 +1,20 @@
+{
+  "name": "farm",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "concurrently --names \"types,ui\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace @farm/types --if-present\" \"npm:dev --workspace @farm/ui --if-present\"",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "concurrently": "^9.1.0",
+    "@types/node": "^22.9.0"
+  }
+}
