@@ -133,6 +133,12 @@ export const searchSchema = z.object({
   limit: z.number().int().positive().max(100).optional(),
 });
 
+export const rsvpSchema = z.object({
+  email: z.string().email(),
+});
+
+export const rsvpUpdateSchema = rsvpSchema.partial();
+
 // ---------------------------------------------------------------------------
 // Validation middleware
 // ---------------------------------------------------------------------------

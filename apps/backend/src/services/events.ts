@@ -24,6 +24,18 @@ interface EventRow {
   updated_at: string;
 }
 
+interface CustomerRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  is_member: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CreateEventInput {
   title: string;
   description?: string;
@@ -173,13 +185,47 @@ export function createEventsService(db: Database) {
     return result.changes > 0;
   }
 
-  /** Register an attendee; idempotent. */
+  /** Register an attendee by ID; checks capacity. */
   function addAttendee(id: string, customerId: Identifier): FarmEvent | undefined {
     const event = getById(id);
     if (!event) return undefined;
-    const attendees = new Set(event.attendeeIds ?? []);
-    attendees.add(customerId);
-    return update(id, { attendeeIds: [...attendees] });
+    // Check capacity
+    const attendees = event.attendeeIds ?? [];
+    if (event.capacity !== undefined && attendees.length >= event.capacity) {
+      return undefined; // Event is full
+    }
+    const attendeeSet = new Set(attendees);
+    attendeeSet.add(customerId);
+    return update(id, { attendeeIds: [...attendeeSet] });
+  }
+
+  /** Register an attendee by email; returns 404 if customer not found. */
+  function addAttendeeByEmail(
+    id: string,
+    email: string,
+  ): { success: boolean; customerId?: string; full?: boolean; customerNotFound?: boolean } {
+    // Find customer by email
+    const customer = db.prepare<{ email: string }, CustomerRow>(
+      `SELECT * FROM customers WHERE email LIKE ?`,
+    ).get({ email: `%${email}%` });
+    
+    if (!customer) {
+      return { success: false, customerNotFound: true };
+    }
+
+    const event = getById(id);
+    if (!event) return { success: false };
+
+    // Check capacity
+    const attendees = event.attendeeIds ?? [];
+    if (event.capacity !== undefined && attendees.length >= event.capacity) {
+      return { success: false, full: true };
+    }
+
+    const attendeeSet = new Set(attendees);
+    attendeeSet.add(customer.id);
+    update(id, { attendeeIds: [...attendeeSet] });
+    return { success: true, customerId: customer.id };
   }
 
   /** Remove an attendee. */
@@ -194,7 +240,7 @@ export function createEventsService(db: Database) {
     return stmtAll.all().map(rowToEvent);
   }
 
-  return { list, getById, create, update, remove, addAttendee, removeAttendee, all };
+  return { list, getById, create, update, remove, addAttendee, addAttendeeByEmail, removeAttendee, all };
 }
 
 export type EventsService = ReturnType<typeof createEventsService>;
