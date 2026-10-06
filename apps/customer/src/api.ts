@@ -131,6 +131,12 @@ export const eventsApi = {
       `/events/${encodeURIComponent(id)}/attendees/${encodeURIComponent(customerId)}`,
       { method: "POST" },
     ),
+  /** Sign up using email instead of customer ID. */
+  rsvpByEmail: (id: string, email: string) =>
+    request<FarmEvent>(
+      `/events/${encodeURIComponent(id)}/attendees`,
+      { method: "POST", body: JSON.stringify({ email }) },
+    ),
   /** Cancel a customer's attendance for an event. */
   cancelRsvp: (id: string, customerId: string) =>
     request<FarmEvent>(

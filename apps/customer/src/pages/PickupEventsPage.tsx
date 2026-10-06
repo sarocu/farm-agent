@@ -3,7 +3,7 @@
  *
  * Lists farm events that double as CSA pickup opportunities (market and
  * harvest kinds), shows capacity and current RSVP count, and lets a
- * customer RSVP / cancel by entering their customer id.
+ * customer RSVP / cancel by entering their email (preferred) or customer id.
  *
  * The customer id is the "login" for the public site — it's remembered in
  * `localStorage` so the customer doesn't re-enter it on every visit.
@@ -59,7 +59,8 @@ export function PickupEventsPage(): JSX.Element {
       <h1 className="customer-page__title">Pickup events</h1>
       <p className="customer-page__lede">
         Reserve a spot at one of our market or harvest pickup events. Enter
-        your customer id once and we'll remember it on this device.
+        your email address to sign up, or use your customer ID if you don't
+        have an email registered.
       </p>
 
       {error ? (
@@ -103,6 +104,7 @@ function PickupCard({
   event: FarmEvent;
   onChanged: () => void;
 }): JSX.Element {
+  const [email, setEmail] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>(() => loadCustomerId());
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | undefined>(undefined);
@@ -114,30 +116,37 @@ function PickupCard({
   }, [customerId]);
 
   const attendeeIds = event.attendeeIds ?? [];
-  const isRsvped = customerId
-    ? attendeeIds.includes(customerId)
-    : false;
+  const isRsvped = customerId ? attendeeIds.includes(customerId) : false;
   const capacity = event.capacity;
   const spotsLeft =
     capacity !== undefined ? Math.max(0, capacity - attendeeIds.length) : undefined;
   const isFull = spotsLeft !== undefined && spotsLeft <= 0 && !isRsvped;
 
   const rsvp = async () => {
-    if (!customerId.trim()) {
-      setErrMsg("Enter your customer id first.");
+    if (!email.trim() && !customerId.trim()) {
+      setErrMsg("Enter your email or customer ID.");
       return;
     }
     setBusy(true);
     setMsg(undefined);
     setErrMsg(undefined);
     try {
-      await eventsApi.rsvp(event.id, customerId.trim());
+      // Try email first
+      if (email.trim()) {
+        await eventsApi.rsvpByEmail(event.id, email.trim());
+      } else {
+        await eventsApi.rsvp(event.id, customerId.trim());
+      }
       setMsg("You're signed up! See you at the pickup.");
       onChanged();
     } catch (err) {
       setErrMsg(
         err instanceof ApiError
-          ? `Couldn't sign up: ${err.message}`
+          ? err.status === 409
+            ? "This event is full."
+            : err.status === 404
+            ? "No customer found with this email. Try your customer ID instead."
+            : `Couldn't sign up: ${err.message}`
           : "Couldn't sign up. Please try again.",
       );
     } finally {
@@ -146,6 +155,10 @@ function PickupCard({
   };
 
   const cancel = async () => {
+    if (!customerId.trim()) {
+      setErrMsg("Customer ID required to cancel.");
+      return;
+    }
     setBusy(true);
     setMsg(undefined);
     setErrMsg(undefined);
@@ -203,7 +216,19 @@ function PickupCard({
       ) : null}
 
       <label className="customer-field">
-        <span className="customer-field__label">Your customer id</span>
+        <span className="customer-field__label">Your email (preferred)</span>
+        <input
+          className="customer-field__input"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          type="email"
+          disabled={busy}
+        />
+      </label>
+
+      <label className="customer-field">
+        <span className="customer-field__label">Or customer ID</span>
         <input
           className="customer-field__input"
           value={customerId}

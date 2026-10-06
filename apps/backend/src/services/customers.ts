@@ -143,7 +143,14 @@ export function createCustomersService(db: Database) {
     return stmtAll.all().map(rowToCustomer);
   }
 
-  return { list, getById, create, update, remove, all };
+  function getByEmail(email: string): Customer | undefined {
+    const like = `%${email}%`;
+    const rows = stmtSearch.all({ search: like });
+    const match = rows.find((r) => r.email.toLowerCase() === email.toLowerCase());
+    return match ? rowToCustomer(match) : undefined;
+  }
+
+  return { list, getById, create, update, remove, all, getByEmail };
 }
 
 export type CustomersService = ReturnType<typeof createCustomersService>;

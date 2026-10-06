@@ -4,7 +4,7 @@
 
 import { Router } from "express";
 import type { EventsService } from "../services/events.js";
-import { eventCreateSchema, eventUpdateSchema, pathParam, validateBody } from "./validation.js";
+import { eventCreateSchema, eventUpdateSchema, pathParam, rsvpSchema, validateBody } from "./validation.js";
 
 export function createEventsRouter(service: EventsService): Router {
   const router = Router();
@@ -47,10 +47,37 @@ export function createEventsRouter(service: EventsService): Router {
     res.status(ok ? 204 : 404).end();
   });
 
+  // RSVP by email (new endpoint)
+  router.post("/:id/attendees", validateBody(rsvpSchema), (req, res) => {
+    const { email } = req.body;
+    const result = service.addAttendeeByEmail(pathParam(req, "id"), email);
+    
+    if (!result.success) {
+      if (result.customerNotFound) {
+        res.status(404).json({ error: "customer_not_found", message: "No customer found with this email" });
+        return;
+      }
+      if (result.full) {
+        res.status(409).json({ error: "event_full", message: "Event is full" });
+        return;
+      }
+      res.status(404).json({ error: "not_found" });
+      return;
+    }
+    res.json(service.getById(pathParam(req, "id")));
+  });
+
+  // RSVP by customer ID (existing endpoint, updated to handle capacity)
   router.post("/:id/attendees/:customerId", (req, res) => {
     const event = service.addAttendee(pathParam(req, "id"), pathParam(req, "customerId"));
     if (!event) {
-      res.status(404).json({ error: "not_found" });
+      // Check if event exists to determine the correct error
+      const e = service.getById(pathParam(req, "id"));
+      if (!e) {
+        res.status(404).json({ error: "not_found" });
+      } else {
+        res.status(409).json({ error: "event_full", message: "Event is full" });
+      }
       return;
     }
     res.json(event);
