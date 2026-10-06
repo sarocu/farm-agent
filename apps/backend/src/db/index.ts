@@ -6,7 +6,7 @@
  */
 
 import Database from "better-sqlite3";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Database as DatabaseType } from "better-sqlite3";
@@ -65,6 +65,7 @@ export function openDatabase(
   databasePath?: string,
 ): OpenDatabaseResult {
   const path = databasePath ?? config.databasePath;
+  mkdirSync(dirname(path), { recursive: true });
   const db = new Database(path);
   db.pragma("foreign_keys = ON");
   db.pragma("journal_mode = WAL");
